@@ -1,0 +1,5 @@
+LIBRARY "D3D9.dll" BASE=0x10000000
+
+EXPORTS
+Direct3DCreate9 = MyDirect3DCreate9
+TexturesManager_loadTextureFromMemoryEx
