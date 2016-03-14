@@ -9,8 +9,6 @@ namespace	None
   class	Patch : public ::APatch
   {
   private:
-    ATexturesManager*	newTexturesManager() const;
-    ACharBuff*		newCharBuff(int flags = CHARBUFF__NO_FLAGS) const;
     LPCWSTR		getGameName() const;
     LPCWSTR		getWindowName() const;
 

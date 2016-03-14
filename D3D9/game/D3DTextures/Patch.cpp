@@ -1,22 +1,7 @@
 #include	"D3DTextures/Patch.hpp"
 
-namespace D3DTextures
-{
-  class	CharBuff : public ACharBuff
-  {
-    void	put_char(const Char&, int, int, int, int){}
-    void	put_char(const Char&, int, int){}
-    void	put_char(const DisplayedChar&){}
-  };
-}
-
 D3DTextures::Patch::Patch()
 {}
-
-ACharBuff*	D3DTextures::Patch::newCharBuff(int) const
-{
-  return new D3DTextures::CharBuff();
-}
 
 ATexturesManager*	D3DTextures::Patch::newTexturesManager() const
 {

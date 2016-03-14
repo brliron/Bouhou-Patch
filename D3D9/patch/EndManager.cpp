@@ -27,7 +27,11 @@ static HHOOK	hHook;
 */
 EndManager::EndManager()
 {
-  asm("int3");
+  if (IsDebuggerPresent())
+    {
+      OutputDebugStringA("Debugger present. Throwing int3 to allow the debugger to put breakpoints.");
+      asm("int3");
+    }
   GetModuleFileNameW(NULL, this->archiveName, MAX_PATH);
   wcscpy(wcsrchr(this->archiveName, L'\\') + 1, L"archive.tar");
 #ifndef DISABLE_ARCHIVE

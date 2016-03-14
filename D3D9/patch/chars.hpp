@@ -98,9 +98,6 @@ class	ACharBuff : public EndManager::Object
 private:
   int		flags;
 
-  virtual void	put_char(const Char& c, int x1, int x2, int y1, int y2) = 0;
-  virtual void	put_char(const Char& c, int x, int y) = 0;
-  virtual void	put_char(const DisplayedChar& c) = 0;
   void	put_str(const wchar_t* str, int x, int y);
   void	dump_line(const std::wstring& str, std::list<DisplayedChar*>& cur_buff);
 

@@ -1,5 +1,6 @@
 #include	<stdio.h>
 #include	"chars.hpp"
+#include	"APatch.hpp"
 #include	"Log.hpp"
 #include	"ParseText.hpp"
 #include	"Reader.hpp"
@@ -60,7 +61,7 @@ void	ACharBuff::put_str(const wchar_t* str, int x, int y)
     {
       c = Char::get(str[i]);
       if (c)
-	this->put_char(*c, x, y);
+	APatch::get().getTextDisplayer().display(*c, x, y);
       else
 	my_log->put_text(L"A character is missing.\n");
       x += c->sw;
@@ -121,7 +122,7 @@ void			ACharBuff::dump_str()
 	  // replace_char(const_cast<DisplayedChar*>(character));
 	  // const_cast<DisplayedChar*>(character)->c = L'A';
 	// }
-      this->put_char(*character);
+      APatch::get().getTextDisplayer().display(*character);
     }
   my_log->end();
 }
