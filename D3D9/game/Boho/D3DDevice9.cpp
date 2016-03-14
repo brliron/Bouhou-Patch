@@ -85,38 +85,7 @@ HRESULT		Boho::AD3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT
   else
     {
       Char tmp;
-      // tmp.c = L'\0';
-      // Boho2-specific code. Needs refactoring.
-      char* c;
-      wchar_t w;
-      asm("movl %%ebp, %0" : "=r"(c));
-      c += 0x164;
-      /*
-      ** ptr to cur char: EBP+1A0
-      ** ptr to full str: EBP+150
-      ** contains cur char: EBP+164
-      ** The values were taken from when the fairy talks on the title screen of Boho2, and may differ in other places.
-      */
-      // char d[4];
-      // d[0] = c[3];
-      // d[1] = c[2];
-      // d[2] = c[1];
-      // d[3] = c[0];
-      char d[2];
-      int dn;
-      d[0] = c[1];
-      d[1] = c[0];
-      dn = 2;
-      if (d[0] == 0)
-	{
-	  d[0] = d[1];
-	  dn = 1;
-	}
-      MultiByteToWideChar(932, 0, d, dn, &w, 1);
-      if (w == 0)
-      asm("int3");
-      tmp.c = w;
-      // End of Boho2-specific code
+      tmp.c = L'\0';
       tmp.tx1 = tab[0].u;
       tmp.tx2 = tab[1].u;
       tmp.ty1 = tab[0].v;
