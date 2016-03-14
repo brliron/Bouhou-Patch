@@ -12,7 +12,7 @@ class	DrawPrimitiveUpDisplayer : public ACharDisplayer
 private:
   D3DDevice9*	d3dd;
 
-  void	fillVertexTab(TLVERTEX tab[4], int x1, int x2, int y1, int y2, const Char& c);
+  void	fill_vertex_tab(TLVERTEX tab[4], int x1, int x2, int y1, int y2, const Char& c);
 
 public:
   DrawPrimitiveUpDisplayer(D3DDevice9* d3dd);

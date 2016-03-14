@@ -5,7 +5,7 @@
 ** TODO: we should use all characters from chars.csv instead of only the ones from the string,
 ** so that the line spacing would not depend of the content of the string.
 */
-int 	ACharDisplayer::getMaxH(LPCWSTR str)
+int 	ACharDisplayer::get_max_h(LPCWSTR str)
 {
   int	maxH;
 
@@ -26,7 +26,7 @@ void	ACharDisplayer::display(LPCWSTR str, int x, int y, int w, int h)
   int	curX;
   int	curY;
 
-  maxH = this->getMaxH(str);
+  maxH = this->get_max_h(str);
   curX = x;
   curY = y;
   for (int i = 0; str[i]; i++)

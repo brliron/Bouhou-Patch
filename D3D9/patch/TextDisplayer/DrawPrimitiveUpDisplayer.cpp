@@ -7,7 +7,7 @@ DrawPrimitiveUpDisplayer::DrawPrimitiveUpDisplayer(D3DDevice9* d3dd)
 DrawPrimitiveUpDisplayer::~DrawPrimitiveUpDisplayer()
 {}
 
-void	DrawPrimitiveUpDisplayer::fillVertexTab(TLVERTEX tab[4], int x1, int x2, int y1, int y2, const Char& c)
+void	DrawPrimitiveUpDisplayer::fill_vertex_tab(TLVERTEX tab[4], int x1, int x2, int y1, int y2, const Char& c)
 {
   for (int i = 0; i < 4; i++)
     {
@@ -38,7 +38,7 @@ void	DrawPrimitiveUpDisplayer::display(const DisplayedChar& c)
 {
   TLVERTEX	tab[4];
 
-  this->fillVertexTab(tab, c.dst_x1, c.dst_x2, c.dst_y1, c.dst_y2, c);
+  this->fill_vertex_tab(tab, c.dst_x1, c.dst_x2, c.dst_y1, c.dst_y2, c);
 #ifndef DISABLE_DRAW_PRIMITIVE_UP
   this->d3dd->::D3DDevice9::DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, tab, 28);
 #endif /* !DISABLE_DRAW_PRIMITIVE_UP */

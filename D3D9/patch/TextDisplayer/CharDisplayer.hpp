@@ -16,7 +16,7 @@
 class	ACharDisplayer : public ATextDisplayer
 {
 private:
-  int 	getMaxH(LPCWSTR str);
+  int 	get_max_h(LPCWSTR str);
 
 public:
   virtual ~ACharDisplayer(){}
