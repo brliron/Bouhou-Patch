@@ -1,7 +1,7 @@
 #ifndef BOHO_CHARBUFF_HPP_
 # define BOHO_CHARBUFF_HPP_
 
-# include	"chars.hpp"
+# include	"patch/CharBuff.hpp"
 # include	"Boho/D3DDevice9.hpp"
 
 /*

@@ -49,7 +49,7 @@ SRCS	=	$(ROOT_DIR)\engine\main.cpp \
 		$(ROOT_DIR)\engine\D3DDevice9.cpp \
 		$(ROOT_DIR)\engine\ATexturesManager.cpp \
 		$(ROOT_DIR)\engine\AD3DTexturesManager.cpp \
-		$(ROOT_DIR)\patch\char_buff.cpp \
+		$(ROOT_DIR)\patch\CharBuff.cpp \
 		$(ROOT_DIR)\patch\ParseText.cpp \
 		$(ROOT_DIR)\patch\Char.cpp \
 		$(ROOT_DIR)\patch\Log.cpp\

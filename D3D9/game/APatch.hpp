@@ -3,7 +3,7 @@
 
 # include	<stdio.h>
 # include	"ATexturesManager.hpp"
-# include	"chars.hpp"
+# include	"CharBuff.hpp"
 # include	"TextDisplayer.hpp"
 
 /*
