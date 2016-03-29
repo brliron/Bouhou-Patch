@@ -36,6 +36,10 @@ APatch::~APatch()
 }
 
 
+
+
+
+
 ATexturesManager&	APatch::getTexturesManager()
 {
   if (this->texturesManager == NULL)
@@ -49,6 +53,34 @@ ACharBuff&		APatch::getCharBuff()
     this->charBuff = this->newCharBuff();
   return *this->charBuff;
 }
+
+ATextDisplayer&		APatch::getTextDisplayer()
+{
+  if (this->textDisplayer == NULL)
+    this->textDisplayer = this->newTextDisplayer();
+  return *this->textDisplayer;
+}
+
+
+
+ATexturesManager*	APatch::newTexturesManager() const
+{
+  throw std::logic_error("APatch::newTexturesManager called, but not overriden by the current patch.");
+}
+
+ACharBuff*	APatch::newCharBuff(int) const
+{
+  throw std::logic_error("APatch::newCharBuff called, but not overriden by the current patch.");
+}
+
+ATextDisplayer*	APatch::newTextDisplayer() const
+{
+  throw std::logic_error("APatch::newTextDisplayer called, but not overriden by the current patch.");
+}
+
+
+
+
 
 
 void	APatch::MessageBox(LPCWSTR text, LPCWSTR title) const

@@ -11,7 +11,6 @@ namespace	D3DTextures
   class	Patch : public AD3DPatch
   {
   private:
-    ACharBuff*		newCharBuff(int flags = CHARBUFF__NO_FLAGS) const;
     ATexturesManager*	newTexturesManager() const;
     ::D3DDevice9*	newD3DDevice() const;
     LPCWSTR		getGameName() const;

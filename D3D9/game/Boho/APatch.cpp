@@ -2,6 +2,7 @@
 #include	"Boho/Apatch.hpp"
 #include	"Boho/CharBuff.hpp"
 #include	"Boho/TexturesManager.hpp"
+#include	"DrawPrimitiveUpDisplayer.hpp"
 #include	"chcp.hpp"
 
 Boho::APatch::APatch()
@@ -22,6 +23,16 @@ ACharBuff*	Boho::APatch::newCharBuff(Boho::AD3DDevice9* d3dd) const
 ATexturesManager*	Boho::APatch::newTexturesManager() const
 {
   return new Boho::TexturesManager();
+}
+
+ATextDisplayer*	Boho::APatch::newTextDisplayer() const
+{
+  throw std::logic_error("The TextDisplayer for the Bouhou games must be created with a Direct3D device.");
+}
+
+ATextDisplayer*	Boho::APatch::newTextDisplayer(::D3DDevice9* d3dd) const
+{
+  return new DrawPrimitiveUpDisplayer(d3dd);
 }
 
 ACharBuff*	Boho::APatch::storeNewCharBuff(Boho::AD3DDevice9* d3dd)
@@ -46,5 +57,6 @@ bool	Boho::APatch::isGameExiting(CWPSTRUCT* msgParams) const
 void	Boho::APatch::initD3D(HWND hFocusWindow, D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
   this->AD3DPatch::initD3D(hFocusWindow, pPresentationParameters);
-  this->storeNewCharBuff(dynamic_cast<Boho::AD3DDevice9*>(this->D3DDevice));
+  this->charBuff = this->newCharBuff(dynamic_cast<Boho::AD3DDevice9*>(this->D3DDevice));
+  this->textDisplayer = this->newTextDisplayer(this->D3DDevice);
 }

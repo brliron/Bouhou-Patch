@@ -14,9 +14,6 @@ namespace	BohoConfig
   class	APatch : public ::APatch
   {
   private:
-    ATexturesManager*		newTexturesManager() const;
-    ACharBuff*			newCharBuff(int flags = CHARBUFF__NO_FLAGS) const;
-
     static BOOL WINAPI		SendMessageA(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
     static BOOL WINAPI		SetWindowTextA(HWND hwnd, LPCSTR lpString);
     static LPCWSTR		getMatch(LPCWSTR str);

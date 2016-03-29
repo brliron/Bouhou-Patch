@@ -16,6 +16,8 @@ namespace	Boho
     ACharBuff*		newCharBuff(int flags = CHARBUFF__NO_FLAGS) const;
     ACharBuff*		newCharBuff(Boho::AD3DDevice9* d3dd) const;
     ATexturesManager*	newTexturesManager() const;
+    ATextDisplayer*	newTextDisplayer() const;
+    ATextDisplayer*	newTextDisplayer(::D3DDevice9* d3dd) const;
 
   public:
     APatch();

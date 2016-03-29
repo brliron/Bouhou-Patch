@@ -3,7 +3,8 @@
 
 # include	<stdio.h>
 # include	"ATexturesManager.hpp"
-# include	"chars.hpp"
+# include	"CharBuff.hpp"
+# include	"TextDisplayer.hpp"
 
 /*
 ** The base class for all game-specific code.
@@ -19,11 +20,15 @@ protected:
   static APatch*	instance;
   ATexturesManager*	texturesManager;
   ACharBuff*		charBuff;
+  ATextDisplayer*	textDisplayer;
 
-  // TODO: all these pure functions become annoying when I don't intend to use them.
-  // I should put them somewhere else, or add default functions.
-  virtual ATexturesManager*	newTexturesManager() const = 0;
-  virtual ACharBuff*		newCharBuff(int flags = CHARBUFF__NO_FLAGS) const = 0;
+  // All these functions throw an exception.
+  // If the patch intend to use one of the component they allocate,
+  // it must override the corresponding function.
+  virtual ATexturesManager*	newTexturesManager() const;
+  virtual ACharBuff*		newCharBuff(int flags = CHARBUFF__NO_FLAGS) const;
+  virtual ATextDisplayer*	newTextDisplayer() const;
+
   virtual LPCWSTR		getGameName() const = 0;
   virtual LPCWSTR		getWindowName() const = 0;
 
@@ -59,9 +64,10 @@ public:
     this->MessageBox(buff, title);
   }
 
-  // Return the instances of TexturesManager and CharBuff associated with APatch, allocating them if needed.
+  // Return the instances of TexturesManager, CharBuff and TextDisplayer associated with APatch, allocating them if needed.
   ATexturesManager&	getTexturesManager();
   ACharBuff&		getCharBuff();
+  ATextDisplayer&	getTextDisplayer();
 
   // Get the game main HWND.
   HWND			getHwnd() const;

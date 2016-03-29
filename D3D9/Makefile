@@ -19,7 +19,14 @@ DEBUG		=	0
 ifeq ($(DEBUG), 1)
   CPPFLAGS	+=	-g
 endif
-CPPFLAGS	+=	-IE:\Program_Files\DX_SDK\Include -I$(ROOT_DIR) -I$(ROOT_DIR)\game -I$(ROOT_DIR)\engine -I$(ROOT_DIR)\patch -I$(ROOT_DIR)\misc -I$(ROOT_DIR)\libarchive
+CPPFLAGS	+=	-IE:\Program_Files\DX_SDK\Include \
+			-I$(ROOT_DIR) \
+			-I$(ROOT_DIR)\game \
+			-I$(ROOT_DIR)\engine \
+			-I$(ROOT_DIR)\patch \
+			-I$(ROOT_DIR)\patch\TextDisplayer \
+			-I$(ROOT_DIR)\misc \
+			-I$(ROOT_DIR)\libarchive
 
 LD		=	g++
 LDFLAGS		+=	-Wl,--enable-stdcall-fixup
@@ -42,7 +49,7 @@ SRCS	=	$(ROOT_DIR)\engine\main.cpp \
 		$(ROOT_DIR)\engine\D3DDevice9.cpp \
 		$(ROOT_DIR)\engine\ATexturesManager.cpp \
 		$(ROOT_DIR)\engine\AD3DTexturesManager.cpp \
-		$(ROOT_DIR)\patch\char_buff.cpp \
+		$(ROOT_DIR)\patch\CharBuff.cpp \
 		$(ROOT_DIR)\patch\ParseText.cpp \
 		$(ROOT_DIR)\patch\Char.cpp \
 		$(ROOT_DIR)\patch\Log.cpp\
@@ -51,6 +58,9 @@ SRCS	=	$(ROOT_DIR)\engine\main.cpp \
 		$(ROOT_DIR)\patch\Reader.cpp \
 		$(ROOT_DIR)\patch\Output.cpp\
 		$(ROOT_DIR)\patch\BackgroundTasksManager.cpp \
+		$(ROOT_DIR)\patch\TextDisplayer\TextDisplayer.cpp \
+		$(ROOT_DIR)\patch\TextDisplayer\CharDisplayer.cpp \
+		$(ROOT_DIR)\patch\TextDisplayer\DrawPrimitiveUpDisplayer.cpp \
 		$(ROOT_DIR)\misc\Bitmap.cpp \
 		$(ROOT_DIR)\misc\Bitmap_load.cpp \
 		$(ROOT_DIR)\misc\Archive.cpp \
@@ -97,15 +107,15 @@ boho: $(BOHO_OBJS)
 link: $(APATCH_OBJ)
 	$(LD) $(OBJS) $(APATCH_OBJ) $(LDFLAGS) $(ROOT_DIR)\engine\D3D9.def -o $(NAME)
 
-#	@cp $(NAME) "C:\Users\liron_b\Desktop\Boho Koumakyou"
-#	echo 'cd "C:\Users\liron_b\Desktop\Boho Koumakyou" && ./tkf.exe && true' | sh &
-####	cmd /C "cd "C:\Users\liron_b\Desktop\Boho Koumakyou - Copie (tests injection D3DX9)" && tkf.exe"
+	@$(CP) $(NAME) "C:\Users\liron_b\Desktop\Boho Koumakyou"
+####	echo 'cd "C:\Users\liron_b\Desktop\Boho Koumakyou" && ./tkf.exe && true' | sh &
+	cmd /C "cd "C:\Users\liron_b\Desktop\Boho Koumakyou" && tkf.exe || exit -b 0"
 
 #	@$(CP) $(NAME) "C:\Users\liron_b\Desktop\Boho Youyoumu"
 ####	echo 'cd "C:\Users\liron_b\Desktop\Boho Youyoumu" && ./boho2.exe && true' | sh &
 #	cmd /C "cd "C:\Users\liron_b\Desktop\Boho Youyoumu" && boho2.exe || exit -b 0"
 
-#	@cp $(NAME) "C:\Users\liron_b\Downloads\boho\Touhou Koumakyou - Scarlet Family 2"
+#	@$(CP) $(NAME) "C:\Users\liron_b\Downloads\boho\Touhou Koumakyou - Scarlet Family 2"
 #	echo 'cd "C:\Users\liron_b\Downloads\boho\Touhou Koumakyou - Scarlet Family 2" && ./boho3.exe && true' | sh &
 
 clean:

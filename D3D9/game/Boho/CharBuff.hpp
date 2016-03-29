@@ -1,7 +1,7 @@
 #ifndef BOHO_CHARBUFF_HPP_
 # define BOHO_CHARBUFF_HPP_
 
-# include	"chars.hpp"
+# include	"patch/CharBuff.hpp"
 # include	"Boho/D3DDevice9.hpp"
 
 /*
@@ -13,11 +13,6 @@ namespace Boho
   {
   private :
     Boho::AD3DDevice9*		d3dd;
-
-    void	put_vertex_tab(TLVERTEX tab[4]);
-    void	put_char(const Char& c, int x1, int x2, int y1, int y2);
-    void	put_char(const Char& c, int x, int y);
-    void	put_char(const DisplayedChar& c);
 
   public:
     CharBuff(Boho::AD3DDevice9* d3dd);

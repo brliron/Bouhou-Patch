@@ -157,31 +157,6 @@ BOOL WINAPI	BohoConfig::APatch::SendMessageA(HWND hwnd, UINT Msg, WPARAM wParam,
 
 
 
-namespace BohoConfig
-{
-  class	CharBuff : public ACharBuff
-  {
-    void	put_char(const Char&, int, int, int, int){}
-    void	put_char(const Char&, int, int){}
-    void	put_char(const DisplayedChar&){}
-  };
-
-  class	TexturesManager : public ATexturesManager
-  {
-    ATexture*	makeTexture(LPCSTR, LPCWSTR, unsigned int, void*) const{return NULL;}
-  };
-}
-
-ATexturesManager*	BohoConfig::APatch::newTexturesManager() const
-{
-  return new BohoConfig::TexturesManager();
-}
-
-ACharBuff*	BohoConfig::APatch::newCharBuff(int) const
-{
-  return new BohoConfig::CharBuff();
-}
-
 bool	BohoConfig::APatch::isGameExiting(CWPSTRUCT*) const
 {
   return false;
