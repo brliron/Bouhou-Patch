@@ -110,9 +110,6 @@ int	ParseText::find_line(LPCWSTR str, int& ref_count)
   return match_i;
 }
 
-////////////////////// PUT SOMEWHERE ELSE /////////////////////////////////
-// void	search_for_texts(const wchar_t*);
-////////////////////// PUT SOMEWHERE ELSE /////////////////////////////////
 void	ParseText::replace_text(const std::list<DisplayedChar*>::iterator& begin)
 {
   std::wstring	str;
@@ -146,10 +143,6 @@ void	ParseText::replace_text(const std::list<DisplayedChar*>::iterator& begin)
       ParseText::skip_line(it, jp_text, length);
       return this->replace_text(it);
     }
-
-  ////////////////////// PUT SOMEWHERE ELSE /////////////////////////////////
-  // search_for_texts(jp_text);
-  ////////////////////// PUT SOMEWHERE ELSE /////////////////////////////////
 
   while (*jp_text && it != this->buff.end())
     {

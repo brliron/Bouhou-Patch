@@ -184,6 +184,7 @@ void	Output::_toFile(LPCWSTR str)
   if (!this->fd)
     return ;
   fputws(str, this->fd);
+  fflush(this->fd);
 }
 
 

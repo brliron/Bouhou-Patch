@@ -67,12 +67,13 @@ HRESULT		Boho::AD3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT
   if (texture_has_flag(this->curTexture, Boho::TexturesFlags::FONT) == false ||
       std::isnan(tab[0].u))
     return orig->DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride);
-  cur_char = Char::get(tab[0].u, tab[0].v);
+  //cur_char = Char::get(tab[0].u, tab[0].v);
+  cur_char = nullptr;
   // replace_char(tab, cur_char); // See the comment above to know why this line is commented
 
   this->handlePixelShader();
 
-  if (cur_char)
+  if (cur_char && false)
     {
       if (cur_char->sw == 0)
 	{
