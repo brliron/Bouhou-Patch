@@ -152,9 +152,12 @@ bool		Archive::addFile(const std::wstring& filename, bool deleteOnDisk)
       WCHAR	path[MAX_PATH];
       wcscpy(path, filename.c_str());
       DeleteFileW(path);
-      while (wcsrchr(path, L'/'))
+      while (wcsrchr(path, L'/') || wcsrchr(path, L'\\'))
 	{
-	  *wcsrchr(path, L'/') = L'\0';
+	  if (wcsrchr(path, L'/'))
+	    *wcsrchr(path, L'/') = L'\0';
+	  else
+	    *wcsrchr(path, L'\\') = L'\0';
 	  if (PathIsDirectoryEmptyW(path))
 	    RemoveDirectoryW(path);
 	  else
