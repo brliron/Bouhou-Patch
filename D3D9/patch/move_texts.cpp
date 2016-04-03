@@ -53,7 +53,7 @@ static void	init(const std::vector<LPCWSTR> strings, Entry indexes[32])
 	{
 	  indexes[j].val = LEFT;
 	  str = strings[i];
-	  indexes[j].n1 = get_num(&str, 50);
+	  indexes[j].n1 = get_num(&str, -1);
 	  indexes[j].n2 = get_num(&str, INT_MAX);
 	  indexes[j].n3 = get_num(&str, 20);
 	}
