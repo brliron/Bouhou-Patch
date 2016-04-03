@@ -125,6 +125,12 @@ HRESULT		Boho::AD3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT
       tmp.sy = -1;
       tmp.sw = tab[1].x - tab[0].x;
       tmp.sh = tab[2].y - tab[0].y;
+      // if (Char::get(w) == nullptr)
+	// {
+	  // tmp.c = L'\0';
+	  // tmp.log(0);
+	  // tmp.c = w;
+	// }
       APatch::get().getCharBuff().add_char(&tmp, tab[0].x, tab[1].x, tab[0].y, tab[2].y);
       return D3D_OK;
     }
