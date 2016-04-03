@@ -1,4 +1,4 @@
-# The easyest way to run this Makefile is to use the "all" rule, by calling the make utility without arguments.
+# The easiest way to run this Makefile is to use the "all" rule, by calling the make utility without arguments.
 # If you don't want to include some game engines, run the "core" rule, then the rules related to the games you want to build, then the "link" rule.
 # For example : make core boho link
 
