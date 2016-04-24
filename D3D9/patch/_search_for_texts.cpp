@@ -215,3 +215,77 @@ void		search_for_texts(std::list<DisplayedChar*>::iterator it, std::list<Display
     }
   search_for_texts(str.c_str());
 }
+
+
+
+
+
+
+
+/*
+** OGG dumper.
+** Searches in the whole memory for OGG files, and saves them.
+** Have actually nothing to do with texts, but it needs find_string, so I put it here.
+
+void*		save_ogg(uint8_t* buff, const char* filename)
+{
+  uint8_t*	page;
+  FILE*		out;
+  bool		last;
+
+  out = fopen(filename, "wb");
+  last = false;
+  page = buff;
+  while (last == false)
+    {
+      if (strncmp((const char*)page, "OggS", 4) != 0)
+	{
+	  Output::printf(L"Err: no OggS magic (pos %p).\n", page - buff);
+	  return buff;
+	}
+      if (page[5] & 0x04)
+	{
+	  Output::write(L"Last chunk found.\n");
+	  last = TRUE;
+	}
+
+      int	nb_segments;
+      int	size;
+
+      nb_segments = page[26];
+      size = 27;
+      for (int i = 0; i < nb_segments; i++)
+	size += page[27 + i] + 1;
+
+      fwrite(page, size, 1, out);
+      page += size;
+  }
+  fclose(out);
+  return page;
+}
+
+void	dump_ogg()
+{
+  static bool	called = false;
+  char	filename[MAX_PATH];
+  void*	last;
+  int	i;
+
+  if (called)
+    return ;
+  called = true;
+  Output::write(L"Building memory cache...");
+  buildMemCache();
+  Output::write(L"done.\nCalling find_string...");
+  std::vector<void*> strings = find_string("OggS");
+  last = nullptr;
+  i = 1;
+  for (void* it : strings)
+    {
+      if (it < last)
+	continue ;
+      sprintf(filename, "%.3d.ogg", i++);
+      last = save_ogg((uint8_t*)it, filename);
+    }
+}
+*/

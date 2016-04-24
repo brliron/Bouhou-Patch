@@ -55,7 +55,7 @@ void	replace_char(TLVERTEX tab[4], Char* cur_char)
 }
 */
 
-#include "Output.hpp"
+
 HRESULT		Boho::AD3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride)
 {
   TLVERTEX*	tab;
