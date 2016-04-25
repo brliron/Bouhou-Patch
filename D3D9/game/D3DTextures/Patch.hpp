@@ -12,6 +12,7 @@ namespace	D3DTextures
   {
   private:
     ATexturesManager*	newTexturesManager() const;
+    ACharBuff*		newCharBuff(int) const;
     ::D3DDevice9*	newD3DDevice() const;
     LPCWSTR		getGameName() const;
     LPCWSTR		getWindowName() const;

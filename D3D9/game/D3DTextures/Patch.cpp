@@ -8,6 +8,11 @@ ATexturesManager*	D3DTextures::Patch::newTexturesManager() const
   return new D3D9::ATexturesManager();
 }
 
+ACharBuff*	D3DTextures::Patch::newCharBuff(int) const
+{
+  return new ACharBuff();
+}
+
 D3DDevice9*	D3DTextures::Patch::newD3DDevice() const
 {
   return new D3DDevice9();
