@@ -50,6 +50,11 @@ bool		ATexturesManager::addTexture(void* pointer)
       texture->hash     = this->textures[i]->hash;
       texture->filename = this->textures[i]->filename;
       texture->flags    = this->textures[i]->flags;
+      if (Reader::get().iniGetBool(L"global", L"REPLACE_EMPTY_TEXTURES"))
+	{
+	  this->textures[i]->loadTranslation();
+	  texture->replacement = this->textures[i];
+	}
     }
   else
     {
@@ -156,4 +161,13 @@ int	ATexturesManager::getIdx(void* texture)
     if (this->textures[i]->getPointer() == texture)
       return i;
   return -1;
+}
+
+void*	ATexturesManager::getReplacement(void* texture)
+{
+  for (unsigned int i = 0; i < this->textures.size(); i++)
+    if (this->textures[i]->getPointer() == texture)
+      if (this->textures[i]->replacement)
+	return this->textures[i]->replacement->getPointer();
+  return nullptr;
 }

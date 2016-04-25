@@ -21,6 +21,7 @@ namespace D3D9
       : ATexture(hash, filename, flags), pointer(pointer) {}
 
     bool	calcHash(char hash[33]) const;
+    bool	loadTranslation();
     void	save(LPCWSTR filename) const;
     void*	getPointer() const;
 

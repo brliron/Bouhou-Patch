@@ -2,6 +2,7 @@
 #include	"APatch.hpp"
 #include	"Reader.hpp"
 #include	"chars.hpp"
+#include	"Output.hpp"
 
 
 D3DDevice9::D3DDevice9()
@@ -13,15 +14,23 @@ D3DDevice9::~D3DDevice9()
 HRESULT	D3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture)
 {
   static int	saveEmptyTextures = -1;
+  static int	replaceEmptyTextures = -1;
 
   if (saveEmptyTextures == -1)
     saveEmptyTextures = Reader::get().iniGetBool(L"global", L"SAVE_EMPTY_TEXTURES") ? 1 : 0;
+  if (replaceEmptyTextures == -1)
+    replaceEmptyTextures = Reader::get().iniGetBool(L"global", L"REPLACE_EMPTY_TEXTURES") ? 1 : 0;
+
   if (saveEmptyTextures == 1 && APatch::get().getCharBuff().empty() == false)
     this->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(1, 0, 0, 0), 0, 0);
 
   APatch::get().getCharBuff().dump_str();
+
   if (APatch::get().getTexturesManager().getIdx(pTexture) == -1)
     APatch::get().getTexturesManager().addTexture(pTexture);
+  if (replaceEmptyTextures == 1 && APatch::get().getTexturesManager().getReplacement(pTexture))
+    pTexture = (IDirect3DBaseTexture9*)APatch::get().getTexturesManager().getReplacement(pTexture);
+
   this->curTexture = pTexture;
   return this->orig->SetTexture(Stage, pTexture);
 }

@@ -19,6 +19,13 @@ bool	D3D9::Texture::calcHash(char hash[33]) const
   return true;
 }
 
+bool	D3D9::Texture::loadTranslation()
+{
+  if (this->filename == NULL)
+    return false;
+  return D3DXCreateTextureFromFileW(AD3DPatch::get()->getD3DDevice()->orig, Reader::get().getFilePath(this->filename), (LPDIRECT3DTEXTURE9*)&this->pointer) == D3D_OK;
+}
+
 void	D3D9::Texture::save(LPCWSTR filename) const
 {
   this->pointer->AddRef(); // Be careful : a game may use IDirect3DResource9::FreePrivateData, which may invalidate our texture.
