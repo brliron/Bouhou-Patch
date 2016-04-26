@@ -94,7 +94,7 @@ APATCH_OBJ =	$(APATCH_SRC:.cpp=.o)
 
 BOHO_OBJS =	$(BOHO_SRCS:.cpp=.o)
 
-all: core boho link
+all: core boho link exec
 
 core: $(OBJS)
 	$(RM) $(APATCH_OBJ) $(RM_END)
@@ -107,16 +107,7 @@ boho: $(BOHO_OBJS)
 link: $(APATCH_OBJ)
 	$(LD) $(OBJS) $(APATCH_OBJ) $(LDFLAGS) $(ROOT_DIR)\engine\D3D9.def -o $(NAME)
 
-	@$(CP) $(NAME) "C:\Users\liron_b\Desktop\Boho Koumakyou"
-####	echo 'cd "C:\Users\liron_b\Desktop\Boho Koumakyou" && ./tkf.exe && true' | sh &
-	cmd /C "cd "C:\Users\liron_b\Desktop\Boho Koumakyou" && tkf.exe || exit -b 0"
-
-#	@$(CP) $(NAME) "C:\Users\liron_b\Desktop\Boho Youyoumu"
-####	echo 'cd "C:\Users\liron_b\Desktop\Boho Youyoumu" && ./boho2.exe && true' | sh &
-#	cmd /C "cd "C:\Users\liron_b\Desktop\Boho Youyoumu" && boho2.exe || exit -b 0"
-
-#	@$(CP) $(NAME) "C:\Users\liron_b\Downloads\boho\Touhou Koumakyou - Scarlet Family 2"
-#	echo 'cd "C:\Users\liron_b\Downloads\boho\Touhou Koumakyou - Scarlet Family 2" && ./boho3.exe && true' | sh &
+-include exec.mk
 
 clean:
 	$(RM) $(OBJS) $(BOHO_OBJS) $(APATCH_OBJ) $(RM_END)
