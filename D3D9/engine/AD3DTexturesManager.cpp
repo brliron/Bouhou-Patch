@@ -9,6 +9,13 @@
 #include	"BackgroundTasksManager.hpp"
 #include	"md5.hpp"
 
+D3D9::Texture::Texture(LPCSTR hash, LPCWSTR filename, unsigned int flags, LPDIRECT3DBASETEXTURE9 pointer)
+  : ATexture(hash, filename, flags), pointer(pointer)
+{
+  if (pointer)
+    pointer->AddRef();
+}
+
 bool	D3D9::Texture::calcHash(char hash[33]) const
 {
   LPD3DXBUFFER	raw_bmp;
@@ -21,14 +28,18 @@ bool	D3D9::Texture::calcHash(char hash[33]) const
 
 bool	D3D9::Texture::loadTranslation()
 {
-  if (this->filename == NULL)
+  if (this->filename == nullptr || this->pointer != nullptr)
     return false;
-  return D3DXCreateTextureFromFileW(AD3DPatch::get()->getD3DDevice()->orig, Reader::get().getFilePath(this->filename), (LPDIRECT3DTEXTURE9*)&this->pointer) == D3D_OK;
+  LPCWSTR path = Reader::get().getFilePath(this->filename);
+  Output::printf(L"Loading translation for texture %S from %s\n", this->hash, path);
+  HRESULT ret = D3DXCreateTextureFromFileW(AD3DPatch::get()->getD3DDevice()->orig, path, (LPDIRECT3DTEXTURE9*)&this->pointer);
+  this->pointer->AddRef();
+  return ret == D3D_OK;
 }
 
 void	D3D9::Texture::save(LPCWSTR filename) const
 {
-  this->pointer->AddRef(); // Be careful : a game may use IDirect3DResource9::FreePrivateData, which may invalidate our texture.
+  this->pointer->AddRef();
   BackgroundTasksManager::get().add(D3D9::Texture::saveToFile, wcsdup(filename), D3DXIFF_PNG, this->pointer);
 }
 
@@ -77,6 +88,7 @@ HRESULT		D3D9::ATexturesManager::loadFromFile(LPDIRECT3DDEVICE9 pDevice, Texture
       return res;
     }
   texture->pointer = *ppTexture;
+  texture->pointer->AddRef();
   return res;
 }
 
@@ -88,7 +100,10 @@ HRESULT		D3D9::ATexturesManager::loadFromMemory(Texture* texture, LPCSTR hash, L
   Output::write(L"from memory.\n");
   res = D3DXCreateTextureFromFileInMemoryEx(pDevice, pSrcData, SrcDataSize, Width, Height, MipLevels, Usage, Format, Pool, Filter, MipFilter, ColorKey, pSrcInfo, pPalette, ppTexture);
   if (texture)
-    texture->pointer = *ppTexture;
+    {
+      texture->pointer = *ppTexture;
+      texture->pointer->AddRef();
+    }
   if (!texture || (texture->filename && endManager->isFileInArchive(texture->filename) == false))
     {
       if (texture && texture->filename)
@@ -136,6 +151,31 @@ HRESULT		D3D9::ATexturesManager::loadTextureFromMemoryEx(LPDIRECT3DDEVICE9 pDevi
   if (res != D3D_OK)
     res = this->loadFromMemory(texture, hash, pDevice, pSrcData, SrcDataSize, Width, Height, MipLevels, Usage, Format, Pool, Filter, MipFilter, ColorKey, pSrcInfo, pPalette, ppTexture);
   return res;
+}
+
+
+void	D3D9::ATexturesManager::freeUnusedTextures()
+{
+  for (unsigned int i = 0; i < this->textures.size(); )
+    {
+      D3D9::Texture*	texture = static_cast<D3D9::Texture*>(this->textures[i]);
+      if (!texture || !texture->pointer)
+	{
+	  i++;
+	  continue ;
+	}
+      if (texture->pointer->Release() == 0)
+	{
+	  texture->pointer = nullptr;
+	  delete texture;
+	  this->textures.erase(this->textures.begin() + i);
+	}
+      else
+	{
+	  texture->pointer->AddRef();
+	  i++;
+	}
+    }
 }
 
 

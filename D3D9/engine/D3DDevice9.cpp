@@ -1,5 +1,6 @@
 #include	"D3DDevice9.hpp"
 #include	"APatch.hpp"
+#include	"AD3DPatch.hpp"
 #include	"Reader.hpp"
 #include	"chars.hpp"
 #include	"Output.hpp"
@@ -11,25 +12,31 @@ D3DDevice9::D3DDevice9()
 D3DDevice9::~D3DDevice9()
 {}
 
-HRESULT	D3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture)
+HRESULT				D3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture)
 {
-  static int	saveEmptyTextures = -1;
-  static int	replaceEmptyTextures = -1;
+  static int			saveEmptyTextures = -1;
+  static int			replaceEmptyTextures = -1;
+  D3D9::ATexturesManager&	texturesManager = *AD3DPatch::get()->getD3D9TexturesManager();
+
+  texturesManager.freeUnusedTextures(); // TODO: call more rarely (every 5 seconds should be enough, so every 5*60 calls to BeginScene for example).
 
   if (saveEmptyTextures == -1)
     saveEmptyTextures = Reader::get().iniGetBool(L"global", L"SAVE_EMPTY_TEXTURES") ? 1 : 0;
   if (replaceEmptyTextures == -1)
     replaceEmptyTextures = Reader::get().iniGetBool(L"global", L"REPLACE_EMPTY_TEXTURES") ? 1 : 0;
 
-  if (saveEmptyTextures == 1 && APatch::get().getCharBuff().empty() == false)
+  if (saveEmptyTextures == 1 && APatch::get().getCharBuff().empty() == false) // TODO: I think this have nothing to do with SAVE_EMPTY_TEXTURES.
     this->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(1, 0, 0, 0), 0, 0);
 
   APatch::get().getCharBuff().dump_str();
 
-  if (APatch::get().getTexturesManager().getIdx(pTexture) == -1)
-    APatch::get().getTexturesManager().addTexture(pTexture);
-  if (replaceEmptyTextures == 1 && APatch::get().getTexturesManager().getReplacement(pTexture))
-    pTexture = (IDirect3DBaseTexture9*)APatch::get().getTexturesManager().getReplacement(pTexture);
+  if ((saveEmptyTextures || replaceEmptyTextures) && pTexture)
+    {
+      if (texturesManager.getIdx(pTexture) == -1)
+	texturesManager.addTexture(pTexture);
+      if (replaceEmptyTextures == 1 && texturesManager.getReplacement(pTexture))
+	pTexture = (IDirect3DBaseTexture9*)texturesManager.getReplacement(pTexture);
+    }
 
   this->curTexture = pTexture;
   return this->orig->SetTexture(Stage, pTexture);
