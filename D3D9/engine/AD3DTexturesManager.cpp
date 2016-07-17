@@ -33,7 +33,13 @@ bool	D3D9::Texture::loadTranslation()
   LPCWSTR path = Reader::get().getFilePath(this->filename);
   Output::printf(L"Loading translation for texture %S from %s\n", this->hash, path);
   HRESULT ret = D3DXCreateTextureFromFileW(AD3DPatch::get()->getD3DDevice()->orig, path, (LPDIRECT3DTEXTURE9*)&this->pointer);
-  this->pointer->AddRef();
+  if (ret == D3D_OK)
+    this->pointer->AddRef();
+  else
+    {
+      Output::write(L"Loading failed.\n");
+      this->pointer = nullptr;
+    }
   return ret == D3D_OK;
 }
 
