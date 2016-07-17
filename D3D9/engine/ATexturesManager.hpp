@@ -20,13 +20,16 @@ public:
   LPCSTR	hash;
   LPCWSTR	filename;
   unsigned int	flags;
+  ATexture*	replacement;
 
   ATexture(LPCSTR hash, LPCWSTR filename, unsigned int flags)
-    : hash(hash), filename(filename), flags(flags) {}
+    : hash(hash), filename(filename), flags(flags), replacement(nullptr) {}
   virtual ~ATexture() {};
 
   // Computes the texture's hash.
   virtual bool	calcHash(char hash[33]) const = 0;
+  // If the filename member of the texture is not empty, load the texture it points to.
+  virtual bool	loadTranslation() = 0;
   // Saves the texture to a file.
   virtual void	save(LPCWSTR filename) const = 0;
   // Returns a pointer to the structure the graphic library uses internally to store the texture.
@@ -71,6 +74,8 @@ public:
   void*	getByFlag(unsigned int flag);
   // Returns the index of the given texture (-1 if the texture isn't found).
   int	getIdx(void* texture);
+  // Returns the replacement texture of the given texture (nullptr if the texture isn't found).
+  void*	getReplacement(void* texture);
   // Returns true if the given texture has the given flag, false otherwise.
   bool	hasFlag(void* texture, unsigned int flag);
 };

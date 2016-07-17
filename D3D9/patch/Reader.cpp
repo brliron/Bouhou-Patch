@@ -203,7 +203,7 @@ void			Reader::readFiles()
 
   wcscpy(searchPath, this->getFilePath(L"script*.txt"));
   hFind = FindFirstFileW(searchPath, &file);
-  if (hFind)
+  if (hFind != INVALID_HANDLE_VALUE)
     {
       do
 	{

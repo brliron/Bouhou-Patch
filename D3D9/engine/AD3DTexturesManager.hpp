@@ -4,6 +4,7 @@
 # include	"D3dx9core.h"
 # include	"ATexturesManager.hpp"
 
+
 namespace D3D9
 {
   /*
@@ -17,10 +18,9 @@ namespace D3D9
   {
     LPDIRECT3DBASETEXTURE9	pointer;
 
-    Texture(LPCSTR hash, LPCWSTR filename, unsigned int flags, LPDIRECT3DBASETEXTURE9 pointer = NULL)
-      : ATexture(hash, filename, flags), pointer(pointer) {}
-
+    Texture(LPCSTR hash, LPCWSTR filename, unsigned int flags, LPDIRECT3DBASETEXTURE9 pointer = nullptr);
     bool	calcHash(char hash[33]) const;
+    bool	loadTranslation();
     void	save(LPCWSTR filename) const;
     void*	getPointer() const;
 
@@ -47,6 +47,7 @@ namespace D3D9
 
     // Wrapper around D3DXCreateTextureFromFileInMemoryEx
     HRESULT	loadTextureFromMemoryEx(LPDIRECT3DDEVICE9 pDevice, LPCVOID pSrcData, UINT SrcDataSize, UINT Width, UINT Height, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DTEXTURE9 *ppTexture);
+    void	freeUnusedTextures();
   };
 
 }
