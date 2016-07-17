@@ -20,6 +20,16 @@ Bitmap&	Bitmap::operator=(const Bitmap& src)
   return *this;
 }
 
+int	Bitmap::getWidth() const
+{
+  return this->width;
+}
+
+int	Bitmap::getHeight() const
+{
+  return this->height;
+}
+
 void				Bitmap::shrink(int x, int y, int w, int h)
 {
   std::vector<unsigned char>	vector_dest;

@@ -19,10 +19,11 @@ namespace D3D9
     LPDIRECT3DBASETEXTURE9	pointer;
 
     Texture(LPCSTR hash, LPCWSTR filename, unsigned int flags, LPDIRECT3DBASETEXTURE9 pointer = nullptr);
-    bool	calcHash(char hash[33]) const;
-    bool	loadTranslation();
-    void	save(LPCWSTR filename) const;
-    void*	getPointer() const;
+    bool		calcHash(char hash[33]) const;
+    bool		loadTranslation();
+    void		save(LPCWSTR filename) const;
+    const Bitmap*	saveToMemory();
+    void*		getPointer() const;
 
     static void	saveToFile(LPWSTR pDestFile, D3DXIMAGE_FILEFORMAT DestFormat, LPDIRECT3DBASETEXTURE9 pSrcTexture);
   };

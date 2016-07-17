@@ -3,6 +3,7 @@
 
 # include	<Windows.h>
 # include	<vector>
+# include	"Bitmap.hpp"
 
 /*
 ** Structure describing a texture.
@@ -21,19 +22,22 @@ public:
   LPCWSTR	filename;
   unsigned int	flags;
   ATexture*	replacement;
+  Bitmap*	cache_bmp;
 
   ATexture(LPCSTR hash, LPCWSTR filename, unsigned int flags)
-    : hash(hash), filename(filename), flags(flags), replacement(nullptr) {}
+    : hash(hash), filename(filename), flags(flags), replacement(nullptr), cache_bmp(nullptr) {}
   virtual ~ATexture() {};
 
   // Computes the texture's hash.
-  virtual bool	calcHash(char hash[33]) const = 0;
+  virtual bool		calcHash(char hash[33]) const = 0;
   // If the filename member of the texture is not empty, load the texture it points to.
-  virtual bool	loadTranslation() = 0;
-  // Saves the texture to a file.
-  virtual void	save(LPCWSTR filename) const = 0;
+  virtual bool		loadTranslation() = 0;
+  // Saves the texture to a file. The implementations should save the file in background to free the current thread.
+  virtual void		save(LPCWSTR filename) const = 0;
+  // Saves the texture to a in-memory bitmap. It can't be run in background and so may be really slow.
+  virtual const Bitmap*	saveToMemory() = 0;
   // Returns a pointer to the structure the graphic library uses internally to store the texture.
-  virtual void*	getPointer() const = 0;
+  virtual void*		getPointer() const = 0;
 };
 
 /*
@@ -78,6 +82,8 @@ public:
   void*	getReplacement(void* texture);
   // Returns true if the given texture has the given flag, false otherwise.
   bool	hasFlag(void* texture, unsigned int flag);
+  // Save a part of a texture.
+  void	savePartOfTexture(void* texture, LPCWSTR filename, float tx1, float ty1, float tx2, float ty2);
 };
 
 

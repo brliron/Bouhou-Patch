@@ -5,26 +5,13 @@
 #include	<Shlwapi.h>
 #include	"Boho/2/D3DDevice9.hpp"
 #include	"Log.hpp"
-#include	"Bitmap.hpp"
-#include	"Output.hpp"
-#include	"ATexturesManager.hpp"
+#include	"APatch.hpp"
 #include	"Boho/TexturesFlags.hpp"
 
 IDirect3DPixelShader9*	Boho2::D3DDevice9::pixelShaderToUse = NULL;
 
-static void	write_bmp_to_file(const Bitmap* bmp_, float tx1, float ty1, float tx2, float ty2, LPWSTR filename)
-{
-  Bitmap	bmp;
-
-  bmp = *bmp_;
-  bmp.shrink((int)(tx1 * 1024) % 1024, (int)(ty1 * 1024) % 1024, (int)((tx2 - tx1) * 1024) % 1024, (int)((ty2 - ty1) * 1024) % 1024);
-  if (bmp.save_24bpp(filename) == false)
-    Output::printf(L"Warning : couldn't save face bitmap as %s.\n", filename);
-}
-
 static void _store(LPCWSTR name, float tx1, float ty1, float tx2, float ty2)
 {
-  static Bitmap*	bmp = NULL;
   WCHAR			out_filename[MAX_PATH];
 
   wsprintfW(out_filename, L"faces\\%s_%d_%d.bmp", name, (int)(tx1 * 10000), (int)(ty1 * 10000));
@@ -32,21 +19,7 @@ static void _store(LPCWSTR name, float tx1, float ty1, float tx2, float ty2)
     return ;
   if (!PathIsDirectoryW(L"faces"))
     CreateDirectoryW(L"faces", NULL);
-  if (bmp == NULL)
-    {
-      LPD3DXBUFFER	raw_bmp;
-
-      bmp = new Bitmap;
-      if (D3DXSaveTextureToFileInMemory(&raw_bmp, D3DXIFF_BMP, (LPDIRECT3DTEXTURE9)get_texture_by_flag(Boho::TexturesFlags::CHARACTERS_PICTURES), NULL) != D3D_OK ||
-	  bmp->load_from_memory(static_cast<unsigned char*>(raw_bmp->GetBufferPointer())) == false)
-	{
-	  Output::printf(L"Warning : couldn't load the faces bitmap.\n");
-	  delete bmp;
-	  bmp = NULL;
-	  return ;
-	}
-    }
-  write_bmp_to_file(bmp, tx1, ty1, tx2, ty2, out_filename);
+  APatch::get().getTexturesManager().savePartOfTexture(get_texture_by_flag(Boho::TexturesFlags::CHARACTERS_PICTURES), out_filename, tx1, ty1, tx2, ty2);
 }
 
 HRESULT		Boho2::D3DDevice9::printCharacterName(D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride)

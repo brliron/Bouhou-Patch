@@ -66,6 +66,9 @@ public:
   ~Bitmap();
   Bitmap&	operator=(const Bitmap& src);
 
+  int	getWidth() const;
+  int	getHeight() const;
+
   // Load a bitmap file.
   bool	load(const char *name);
   bool	load(const std::string& name);

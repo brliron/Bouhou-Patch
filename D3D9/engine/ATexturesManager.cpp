@@ -10,6 +10,7 @@
 #include	"EndManager.hpp"
 #include	"APatch.hpp"
 #include	"Reader.hpp"
+#include	"Output.hpp"
 #include	"md5.hpp"
 
 
@@ -170,4 +171,67 @@ void*	ATexturesManager::getReplacement(void* texture)
       if (this->textures[i]->replacement)
 	return this->textures[i]->replacement->getPointer();
   return nullptr;
+}
+
+void	ATexturesManager::savePartOfTexture(void* pointer, LPCWSTR filename, float tx1, float ty1, float tx2, float ty2)
+{
+  ATexture* texture = nullptr;
+
+  for (ATexture* it : this->textures)
+    if (pointer == it->getPointer())
+      texture = it;
+  if (texture == nullptr)
+    return ;
+
+  Bitmap	bmp;
+  int		width;
+  int		height;
+  int		x;
+  int		y;
+  int		w;
+  int		h;
+
+  while (tx1 < 0)
+    tx1++;
+  while (tx1 > 1)
+    tx1--;
+  while (ty1 < 0)
+    ty1++;
+  while (ty1 > 1)
+    ty1--;
+  while (tx2 < 0)
+    tx2++;
+  while (tx2 > 1)
+    tx2--;
+  while (ty2 < 0)
+    ty2++;
+  while (ty2 > 1)
+    ty2--;
+
+  bmp = *texture->saveToMemory();
+  width = bmp.getWidth();
+  height = bmp.getHeight();
+
+  x = tx1 * width;
+  y = ty1 * height;
+  w = (tx2 - tx1) * width;
+  h = (ty2 - ty1) * height;
+  if (x < 0)
+    x *= -1;
+  if (y < 0)
+    y *= -1;
+  if (w < 0)
+    w *= -1;
+  if (h < 0)
+    h *= -1;
+  x %= width;
+  y %= height;
+  w %= width;
+  h %= height;
+
+  Output::printf(L"Width: %d, height: %d. From (%d;%d) to (%d;%d)\n", width, height,
+             x, y, w, h);
+  bmp.shrink(x, y, w, h);
+  if (bmp.save_24bpp(filename) == false)
+    Output::printf(L"Warning : couldn't save face bitmap as %s.\n", filename);
 }

@@ -57,6 +57,29 @@ void	D3D9::Texture::saveToFile(LPWSTR pDestFile, D3DXIMAGE_FILEFORMAT DestFormat
   free(pDestFile);
 }
 
+const Bitmap*	D3D9::Texture::saveToMemory()
+{
+  if (this->cache_bmp)
+    return this->cache_bmp;
+
+  LPD3DXBUFFER	raw_bmp;
+  Bitmap*	bmp;
+
+  if (D3DXSaveTextureToFileInMemory(&raw_bmp, D3DXIFF_BMP, this->pointer, NULL) == D3D_OK)
+    {
+      bmp = new Bitmap;
+      if (bmp->load_from_memory(static_cast<unsigned char*>(raw_bmp->GetBufferPointer())))
+	{
+	  this->cache_bmp = bmp;
+	  return bmp;
+	}
+      delete bmp;
+      // TODO: free raw_bmp
+    }
+  Output::printf(L"Warning : couldn't load the faces bitmap.\n");
+  return nullptr;
+}
+
 void*	D3D9::Texture::getPointer() const
 {
   return this->pointer;
