@@ -76,7 +76,7 @@ const Bitmap*	D3D9::Texture::saveToMemory()
       delete bmp;
       // TODO: free raw_bmp
     }
-  Output::printf(L"Warning : couldn't load the faces bitmap.\n");
+  Output::printf(L"Warning : couldn't save texture %S to memory.\n", this->hash);
   return nullptr;
 }
 

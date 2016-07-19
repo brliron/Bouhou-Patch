@@ -229,9 +229,7 @@ void	ATexturesManager::savePartOfTexture(void* pointer, LPCWSTR filename, float 
   w %= width;
   h %= height;
 
-  Output::printf(L"Width: %d, height: %d. From (%d;%d) to (%d;%d)\n", width, height,
-             x, y, w, h);
   bmp.shrink(x, y, w, h);
   if (bmp.save_24bpp(filename) == false)
-    Output::printf(L"Warning : couldn't save face bitmap as %s.\n", filename);
+    Output::printf(L"Warning : couldn't save part of bitmap as %s.\n", filename);
 }
