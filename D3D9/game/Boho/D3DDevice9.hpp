@@ -2,6 +2,7 @@
 # define BOHO_D3DDEVICE9_HPP_
 
 # include	"engine/D3DDevice9.hpp"
+# include	"chars.hpp"
 
 /*
 ** Subclass of D3DDevice9 for the Boho games.
@@ -14,6 +15,10 @@ namespace	Boho
   private:
     virtual void	handlePixelShader();
     virtual HRESULT	printCharacterName(D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride) = 0;
+
+    void		addCharFromDb(Char* cur_char, TLVERTEX* tab);
+    void		addUnknownChar(TLVERTEX* tab);
+    bool		addCharFromStack(int ebp_offset, TLVERTEX* tab);
 
   public:
     AD3DDevice9(){}

@@ -5,6 +5,8 @@
 #include	"Boho/TexturesFlags.hpp"
 #include	"game/APatch.hpp"
 #include	"chars.hpp"
+#include	"Reader.hpp"
+#include	"Output.hpp"
 
 void	Boho::AD3DDevice9::handlePixelShader()
 {}
@@ -56,6 +58,77 @@ void	replace_char(TLVERTEX tab[4], Char* cur_char)
 */
 
 
+void	Boho::AD3DDevice9::addCharFromDb(Char* cur_char, TLVERTEX* tab)
+{
+  if (cur_char->sw == 0)
+    {
+      cur_char->sw = tab[1].x - tab[0].x;
+      cur_char->sh = tab[2].y - tab[0].y;
+    }
+  APatch::get().getCharBuff().add_char(cur_char, tab[0].x, tab[1].x, tab[0].y, tab[2].y);
+}
+
+void	Boho::AD3DDevice9::addUnknownChar(TLVERTEX* tab)
+{
+  Char	tmp;
+
+  tmp.c = L'\0';
+  tmp.tx1 = tab[0].u;
+  tmp.tx2 = tab[1].u;
+  tmp.ty1 = tab[0].v;
+  tmp.ty2 = tab[2].v;
+  tmp.sy = -1;
+  tmp.sw = tab[1].x - tab[0].x;
+  tmp.sh = tab[2].y - tab[0].y;
+  APatch::get().getCharBuff().add_char(&tmp, tab[0].x, tab[1].x, tab[0].y, tab[2].y);
+}
+
+// Warning: changing this fonction may change the way gcc uses the stack in this function, and so break indexes relative to ebp.
+bool	Boho::AD3DDevice9::addCharFromStack(int ebp_offset, TLVERTEX* tab)
+{
+  Char	tmp;
+
+  char*		ebp;
+  char		c[2];
+  int		c_size;
+  wchar_t	w;
+
+  asm("movl %%ebp, %0" : "=r"(ebp));
+  ebp += ebp_offset;
+  /*
+  ** A few values for Boho2 (before this refactoring changes EBP):
+  ** ptr to cur char: EBP+1A0
+  ** ptr to full str: EBP+150
+  ** contains cur char: EBP+164
+  */
+  c[0] = ebp[1];
+  c[1] = ebp[0];
+  c_size = 2;
+  if (c[0] == 0)
+    {
+      c[0] = c[1];
+      c_size = 1;
+    }
+  MultiByteToWideChar(932, 0, c, c_size, &w, 1);
+  if (w == 0)
+    {
+      Output::printf(L"Error: Boho::AD3DDevice9::addCharFromStack found an invalid character (EBP_OFFSET=0x%X, 1st byte=%d, 2nd byte=%d, codepage=932)\n", ebp_offset, c[0], c[1]);
+      return false;
+    }
+  tmp.c = w;
+
+  tmp.tx1 = tab[0].u;
+  tmp.tx2 = tab[1].u;
+  tmp.ty1 = tab[0].v;
+  tmp.ty2 = tab[2].v;
+  tmp.sy = -1;
+  tmp.sw = tab[1].x - tab[0].x;
+  tmp.sh = tab[2].y - tab[0].y;
+  APatch::get().getCharBuff().add_char(&tmp, tab[0].x, tab[1].x, tab[0].y, tab[2].y);
+  return true;
+}
+
+// Warning: changing this fonction may change the way gcc uses the stack in this function, and so break indexes relative to ebp in addCharFromStack.
 HRESULT		Boho::AD3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride)
 {
   TLVERTEX*	tab;
@@ -67,71 +140,25 @@ HRESULT		Boho::AD3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT
   if (texture_has_flag(this->curTexture, Boho::TexturesFlags::FONT) == false ||
       std::isnan(tab[0].u))
     return orig->DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride);
-  //cur_char = Char::get(tab[0].u, tab[0].v);
-  cur_char = nullptr;
   // replace_char(tab, cur_char); // See the comment above to know why this line is commented
 
   this->handlePixelShader();
 
-  if (cur_char && false)
+  int	ebp_offset;
+
+  ebp_offset = wcstol(Reader::get().iniGetString(L"Global", L"EBP_OFFSET"), NULL, 0);
+  if (ebp_offset == 0)
     {
-      if (cur_char->sw == 0)
-	{
-	  cur_char->sw = tab[1].x - tab[0].x;
-	  cur_char->sh = tab[2].y - tab[0].y;
-	}
-      APatch::get().getCharBuff().add_char(cur_char, tab[0].x, tab[1].x, tab[0].y, tab[2].y);
-      return D3D_OK;
+      cur_char = Char::get(tab[0].u, tab[0].v);
+      if (cur_char)
+	addCharFromDb(cur_char, tab);
+      else
+	addUnknownChar(tab);
     }
   else
     {
-      Char tmp;
-      // tmp.c = L'\0';
-      // Boho2-specific code. Needs refactoring.
-      char* c;
-      wchar_t w;
-      asm("movl %%ebp, %0" : "=r"(c));
-      c += 0x164;
-      /*
-      ** ptr to cur char: EBP+1A0
-      ** ptr to full str: EBP+150
-      ** contains cur char: EBP+164
-      ** The values were taken from when the fairy talks on the title screen of Boho2, and may differ in other places.
-      */
-      // char d[4];
-      // d[0] = c[3];
-      // d[1] = c[2];
-      // d[2] = c[1];
-      // d[3] = c[0];
-      char d[2];
-      int dn;
-      d[0] = c[1];
-      d[1] = c[0];
-      dn = 2;
-      if (d[0] == 0)
-	{
-	  d[0] = d[1];
-	  dn = 1;
-	}
-      MultiByteToWideChar(932, 0, d, dn, &w, 1);
-      if (w == 0)
-      asm("int3");
-      tmp.c = w;
-      // End of Boho2-specific code
-      tmp.tx1 = tab[0].u;
-      tmp.tx2 = tab[1].u;
-      tmp.ty1 = tab[0].v;
-      tmp.ty2 = tab[2].v;
-      tmp.sy = -1;
-      tmp.sw = tab[1].x - tab[0].x;
-      tmp.sh = tab[2].y - tab[0].y;
-      // if (Char::get(w) == nullptr)
-	// {
-	  // tmp.c = L'\0';
-	  // tmp.log(0);
-	  // tmp.c = w;
-	// }
-      APatch::get().getCharBuff().add_char(&tmp, tab[0].x, tab[1].x, tab[0].y, tab[2].y);
-      return D3D_OK;
+      if (!addCharFromStack(ebp_offset, tab))
+        addUnknownChar(tab);
     }
+  return D3D_OK;
 }
