@@ -201,6 +201,9 @@ void			Reader::readFiles()
   WCHAR			searchPath[PATH_MAX];
   WIN32_FIND_DATAW	file;
 
+  // At the beginning, I thought the filenames should either be a single script.txt or a collection of script_something.txt.
+  // I think it may be convenient to put these files in a dedicated directory, with any filename.
+  // And it turns out the source code I wrote already allow that.
   wcscpy(searchPath, this->getFilePath(L"script*.txt"));
   hFind = FindFirstFileW(searchPath, &file);
   if (hFind != INVALID_HANDLE_VALUE)
@@ -208,13 +211,15 @@ void			Reader::readFiles()
       do
 	{
 	  if ((file.dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_ENCRYPTED | FILE_ATTRIBUTE_OFFLINE)) ||
-	      wcscmp(file.cFileName, L"script_end.txt") == 0)
+	      wcscmp(file.cFileName, L"script_end.txt") == 0 ||
+	      wcscmp(file.cFileName, L"end.txt") == 0)
 	    continue ;
 	  read_file(this->getFilePath(file.cFileName), parse_line);
 	} while(FindNextFileW(hFind, &file));
       FindClose(hFind);
     }
   read_file(this->getFilePath(L"script_end.txt"), parse_line);
+  read_file(this->getFilePath(L"script\\end.txt"), parse_line);
   ParseText::strings.push_back(NULL);
 }
 
