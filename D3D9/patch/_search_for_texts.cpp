@@ -92,10 +92,12 @@ void				buildMemCache()
     }
 }
 
-bool	isValidPtr(const void* addr)
+bool	isValidPtr(const void* addr, bool acceptOwnStack = true)
 {
   MEMORY_BASIC_INFORMATION	mbi;
   if (VirtualQuery(addr, &mbi, sizeof(mbi)) != sizeof(mbi))
+    return false;
+  if (acceptOwnStack == false && mbi.BaseAddress <= &mbi && &mbi <= mbi.BaseAddress + mbi.RegionSize)
     return false;
   if ((mbi.Protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_WRITECOPY)) && !(mbi.Protect & PAGE_GUARD) && (mbi.State & MEM_COMMIT))
     return true;
@@ -109,14 +111,27 @@ std::vector<void*>	find_string(const char* str)
   const unsigned int	str_len = strlen(str);
 
   for (std::pair<void*, DWORD> it : memCache)
-    if (isValidPtr(it.first))
+    if (isValidPtr(it.first)) // Why is that needed?
       for (char* addr = (char*)it.first; addr < (char*)it.first + it.second - str_len - 1; addr++) // TODO: do we really need -1 here?
 	if (memcmp(addr, str, str_len) == 0)
 	  addresses.push_back(addr);
   return addresses;
 }
 
-void		print_string(const char* ptr, int rec_dir)
+std::vector<void*>	find_address(const void* pointer, int iNeedAName, bool acceptOwnStack = true)
+{
+  std::vector<void*>	addresses;
+
+  for (std::pair<void*, DWORD> it : memCache)
+    if (isValidPtr(it.first, acceptOwnStack)) // Why is that needed?
+      for (void** addr = (void**)it.first; (char*)addr < (char*)it.first + it.second - 4; addr++) // TODO: do we really need -1 here?
+	for (const char* near_pointer = (const char*)pointer; near_pointer >= (const char*)pointer - iNeedAName; near_pointer--)
+	  if (*addr == near_pointer)
+	    addresses.push_back(addr);
+  return addresses;
+}
+
+void		print_string(const char* ptr, bool rec, int rec_dir)
 {
   wchar_t*	wPtr;
   int		ret;
@@ -131,10 +146,10 @@ void		print_string(const char* ptr, int rec_dir)
   wPtr = (wchar_t*)malloc(ret * 2);
   MultiByteToWideChar(932, 0, ptr, -1, wPtr, ret);
   if (isStringKnown(wPtr) == false)
-    Output::printf(L"Found %p%s: % s\n", ptr, ptr < (void*)0x00200000 ? L" (probably on the stack)" : L"", wPtr);
+    Output::printf(L"Found %p: %s\n", ptr, wPtr);
 
   // Searching for the previous string
-  if (rec_dir <= 0)
+  if (rec && rec_dir <= 0)
     {
       const char*	prev_ptr = ptr - 1;
       // If the current string is preceded by 1 of a few \0, another string may precede.
@@ -146,12 +161,12 @@ void		print_string(const char* ptr, int rec_dir)
 	    prev_ptr--;
 	  prev_ptr++;
 	  if (isValidPtr(prev_ptr) && isValidSjis(*prev_ptr))
-	    print_string(prev_ptr, -1);
+	    print_string(prev_ptr, true, -1);
 	}
     }
 
   // Searching for the next string
-  if (rec_dir >= 0)
+  if (rec && rec_dir >= 0)
     {
       const char*	next_ptr = ptr + strlen(ptr) + 1;
       int		i;
@@ -160,7 +175,23 @@ void		print_string(const char* ptr, int rec_dir)
       // We found something. Is this a string? We check all its characters.
       for (i = 0; isValidPtr(next_ptr + i) && isValidSjis(next_ptr[i]); i++);
       if (i != 0 && isValidPtr(next_ptr + i) && next_ptr[i] == '\0')
-	print_string(next_ptr, 1);
+	print_string(next_ptr, true, 1);
+    }
+
+  // Find references to the string, search for other strings around the reference.
+  if (rec == true)
+    {
+      std::vector<void*> refs = find_address(ptr, 0x20, false);
+      for (void* it : refs)
+	{
+	  Output::printf(L"Trying refs for %s at %p:\n", wPtr, it);
+	  char** ptr = (char**)it;
+	  if (isValidPtr(ptr[-1]))
+	    print_string(ptr[-1], false, 0);
+	  if (isValidPtr(ptr[1]))
+	    print_string(ptr[1], false, 0);
+	  Output::write(L"done.\n");
+	}
     }
 }
 
@@ -172,7 +203,7 @@ void	search_for_texts(const wchar_t* text)
   static int i = 0;
   if (i++ < 4)
     return ;
-  // Output::printf(L"Will look for %s...\n", text);
+  Output::printf(L"Will look for %s...\n", text);
   for (std::wstring& it : seenStrings)
     if (it == text)
       {
@@ -197,7 +228,7 @@ void	search_for_texts(const wchar_t* text)
   std::vector<void*> strings = find_string(cText);
   Output::write(L"done.\n");
   for (void* it : strings)
-    print_string((char*)it, 0);
+    print_string((char*)it, true, 0);
 
   if (IsDebuggerPresent())
     asm("int3");
