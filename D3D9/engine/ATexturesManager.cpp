@@ -109,6 +109,41 @@ void		ATexturesManager::loadTextures()
       this->addTexture(hash, filename, flags, NULL);
     }
   free(keysPath);
+
+  // Loading aditional files from textures directory
+  HANDLE		hFind;
+  WCHAR			searchPath[PATH_MAX];
+  WCHAR			relPath[PATH_MAX];
+  WIN32_FIND_DATAW	file;
+
+  wcscpy(searchPath, reader.getFilePath(L"textures\\*"));
+  wcscpy(relPath, L"textures\\\\");
+  hFind = FindFirstFileW(searchPath, &file);
+  if (hFind != INVALID_HANDLE_VALUE)
+    {
+      do
+	{
+	  char*		hash;
+	  LPCWSTR	filename;
+
+	  hash = (char*)malloc(33);
+	  for (int i = 0; i < 32; i++)
+	    hash[i] = file.cFileName[i];
+	  hash[32] = '\0';
+	  wcscpy(relPath + wcslen(L"textures\\"), file.cFileName);
+	  for (ATexture* it : this->textures)
+	    if (memcmp(hash, it->hash, 32) == 0)
+	      {
+	        free(hash);
+		if (it->filename == NULL)
+		  it->filename = wcsdup(relPath);
+	        continue;
+	      }
+	  filename = wcsdup(relPath);
+	  this->addTexture(hash, filename, 0, NULL);
+	} while(FindNextFileW(hFind, &file));
+      FindClose(hFind);
+    }
 }
 
 
