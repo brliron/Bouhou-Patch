@@ -32,7 +32,8 @@ bool	D3D9::Texture::loadTranslation()
     return false;
   LPCWSTR path = Reader::get().getFilePath(this->filename);
   Output::printf(L"Loading translation for texture %S from %s\n", this->hash, path);
-  HRESULT ret = D3DXCreateTextureFromFileW(AD3DPatch::get()->getD3DDevice()->orig, path, (LPDIRECT3DTEXTURE9*)&this->pointer);
+  // Like D3DXCreateTextureFromFileW, but we use D3DX_DEFAULT_NONPOW2 instead of D3DX_DEFAULT for the width / height. The result is way less blurry when the textures size is not a power of 2, and I guess all graphic cards today support textures like this.
+  HRESULT ret = D3DXCreateTextureFromFileExW(AD3DPatch::get()->getD3DDevice()->orig, path, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&this->pointer);
   if (ret == D3D_OK)
     this->pointer->AddRef();
   else

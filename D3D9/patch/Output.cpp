@@ -191,25 +191,32 @@ void	Output::_toFile(LPCWSTR str)
 
 void	Output::openConsole()
 {
-  Output::instance->_openConsole();
+  if (Output::instance)
+    Output::instance->_openConsole();
 }
 
 bool	Output::openFile()
 {
-  return Output::instance->_openFile();
+  if (Output::instance)
+    return Output::instance->_openFile();
+  else
+    return false;
 }
 
 void	Output::write(LPCWSTR str)
 {
-  Output::instance->_write(str);
+  if (Output::instance)
+    Output::instance->_write(str);
 }
 
 void	Output::toCout(LPCWSTR str)
 {
-  Output::instance->_toCout(str);
+  if (Output::instance)
+    Output::instance->_toCout(str);
 }
 
 void	Output::toFile(LPCWSTR str)
 {
-  Output::instance->_toFile(str);
+  if (Output::instance)
+    Output::instance->_toFile(str);
 }

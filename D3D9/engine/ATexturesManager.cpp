@@ -24,6 +24,10 @@ ATexturesManager::~ATexturesManager()
 
 void	ATexturesManager::addTexture(ATexture* texture)
 {
+  if (texture->filename)
+    Output::printf(L"Registering file %s - %S\n", texture->filename, texture->hash);
+  else
+    Output::printf(L"Registering file %S\n", texture->hash);
   this->textures.push_back(texture);
 }
 
