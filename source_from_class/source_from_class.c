@@ -70,7 +70,7 @@ void	parse_line(char *line, FILE *out)
       params[i][0] = '\0';
     }
 
-  /* Ecriture de la chaine */
+  /* Write string */
   fprintf(out, "%s\t%s::%s(", ret, CLASS_NAME, name);
   i = 0;
   while (params[i][0])
